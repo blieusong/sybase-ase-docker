@@ -14,7 +14,7 @@ RUN apt update \
 
 COPY ressources/response_file.txt /tmp/response_file.txt
 
-# Installs ASE and then remove many useless junks
+# Installs ASE and then remove useless stuffs
 RUN cd /tmp \
     && curl ${ASE_INSTALL_TGZ} | tar -xzf - \
     && ./setup.bin -f response_file.txt -i silent -DAGREE_TO_SAP_LICENSE=true -DRUN_SILENT=true \
@@ -30,6 +30,12 @@ RUN cd /tmp \
     && rm -fr /opt/sap/SYBDIAG \
     && rm -fr /opt/sap/COCKPIT-4 \
     && rm -fr /opt/sap/WS-16_0 \
+    # we don't need non 64bit versions of the libs
+    && rm -fr /opt/sap/OCS-16_0/bin32 \
+    && rm -fr /opt/sap/OCS-16_0/lib3p \
+    && rm -fr /opt/sap/OCS-16_0/lib/*[!6][!4].a \
+    && rm -fr /opt/sap/OCS-16_0/lib/*[!6][!4].so \
+    # remove graphical apps and java junks
     && cd /opt/sap/ASE-16_0/bin && rm asecfg ddlgen *java sqlloc sqlupgrade srvbuild 
 
 RUN groupadd sybase \
@@ -45,5 +51,7 @@ COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
 #trick to create the directory with proper rights.
 COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
+
+RUN apt -y remove curl unzip
 
 ENV PATH=/home/sybase/bin:$PATH
