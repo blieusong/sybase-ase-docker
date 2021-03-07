@@ -53,12 +53,12 @@ $ docker build -t sybase/server:latest .
 If you want to specify your fileserver from the command line instead of in the `Dockerfile`, run
 
 ```console
-docker build --build-arg FILESERVER="http://whatever.com/ -t sybase/server:latest .
+$ docker build --build-arg FILESERVER="http://whatever.com/ -t sybase/server:latest .
 ```
 
 2. Run the image as **sybase** to create the database. Bind your host local folders as follow:
 
-```console
+```
 docker run --user=sybase \
     -v $HOME/sybase/data:/data \
     -v $HOME/sybase/ase:/home/sybase/ase \
@@ -68,7 +68,7 @@ docker run --user=sybase \
 
 3. On the Docker image session:
 
-```console
+```
 $ . /opt/sap/SYBASE.sh
 
 $ $SYBASE/$SYBASE_ASE/bin/srvbuildres \
@@ -80,7 +80,7 @@ This completes the database creation. Since the data are created in bound volume
 
 4. Create a *virtual network*. This enables to attach other devices to it afterwards, and to assign a static IP to the container.
 
-```console
+```
 $ docker network create \
     --driver=bridge \
     --subnet=172.24.0.0/16 \
@@ -125,13 +125,15 @@ DB_TEST
 1>>
 ```
 
+This works because I have a **DS_GB_TEST** entry in the `freetds.conf`. See the [section on interface and freetds.conf files](##Interface or freetds.conf file)
+
 To stop the container:
 
 ```console
 $ docker stop 3ebf01013fef
 ```
 
-note the the ID is generated for every Docker session. You'll need to get it with `docker ps`.
+Note that the ID is generated for every Docker session. You'll need to get it with `docker ps`.
 
 # Technical Details
 
