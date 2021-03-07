@@ -53,7 +53,7 @@ $ docker build -t sybase/server:latest .
 If you want to specify your fileserver from the command line instead of in the `Dockerfile`, run
 
 ```console
-$ docker build --build-arg FILESERVER="http://whatever.com/ -t sybase/server:latest .
+$ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:latest .
 ```
 
 2. Run the image as **sybase** to create the database. Bind your host local folders as follow:
@@ -112,7 +112,7 @@ CONTAINER ID   IMAGE                  COMMAND                  CREATED        ST
 If you have proper clients installed, you can also try to open a database session. For example with FreeTDS:
 
 ```console
-$ fisql -Usa -Psybase -SDS_GB_TEST
+$ fisql -Usa -Psybase -SDB_TEST
 Changed database context to 'master'.
 
 1>> select @@servername
@@ -125,7 +125,7 @@ DB_TEST
 1>>
 ```
 
-This works because I have a **DS_GB_TEST** entry in the `freetds.conf`. See the [section on interface and freetds.conf files](#interface-or-freetdsconf-file)
+This works because I have a **DB_TEST** entry in the `freetds.conf` file. See the [section on interface and freetds.conf files](#interface-or-freetdsconf-file)
 
 To stop the container:
 
@@ -165,7 +165,7 @@ DB_TEST
     query tcp ether 172.24.1.1 5000
 ```
 
-If you use [FreeTDS](https://www.freetds.org), the `interface` file will do, but you can also add that entry to `freetds.conf`
+If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too, but you can also add that entry to `freetds.conf`
 
 ```
 [DB_TEST]
