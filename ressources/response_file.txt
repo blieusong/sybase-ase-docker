@@ -1,11 +1,3 @@
-# Sun Feb 21 22:18:10 GMT 2021
-# Replay feature output
-# ---------------------
-# This file was built by the Replay feature of InstallAnywhere.
-# It contains variables that were set by Panels, Consoles or Custom Code.
-
-
-
 #Validate Response File
 #----------------------
 RUN_SILENT=true
@@ -19,8 +11,8 @@ USER_INSTALL_DIR=/opt/sap
 
 #Choose Install Set
 #------------------
-CHOSEN_FEATURE_LIST=fase_srv,fopen_client,fdblib,fsysam_util,fscc_server,fasecmap,fase_cagent
-CHOSEN_INSTALL_FEATURE_LIST=fase_srv,fopen_client,fdblib,fsysam_util,fscc_server,fasecmap,fase_cagent
+CHOSEN_FEATURE_LIST=fase_srv,fasecmap,fase_cagent
+CHOSEN_INSTALL_FEATURE_LIST=fase_srv,fasecmap,fase_cagent
 CHOSEN_INSTALL_SET=Custom
 
 #Choose Product License Type
