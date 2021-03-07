@@ -31,9 +31,9 @@ sqlsrv.sybpcidb_device_physical_name: PUT_THE_PATH_OF_YOUR_SYBPCIDB_DATA_DEVICE_
 sqlsrv.sybpcidb_device_size: USE_DEFAULT
 sqlsrv.sybpcidb_database_size: USE_DEFAULT
 # If sqlsrv.do_optimize_config is set to yes, both sqlsrv.avail_physical_memory and sqlsrv.avail_cpu_num need to be set.
-sqlsrv.do_optimize_config: no
-sqlsrv.avail_physical_memory: PUT_THE_AVAILABLE_PHYSICAL_MEMORY_FOR_ASE_IN_OPTIMIZATION
-sqlsrv.avail_cpu_num: PUT_THE_AVAILABLE_NUMBER_CPU_FOR_ASE_IN_OPTIMIZATION
+sqlsrv.do_optimize_config: yes
+sqlsrv.avail_physical_memory: 4096
+sqlsrv.avail_cpu_num: 2
 # Valid only if Remote Command and Control Agent for ASE is installed
 sqlsrv.configure_remote_command_and_control_agent_ase: no
 # Valid only if ASE Cockpit is installed.
