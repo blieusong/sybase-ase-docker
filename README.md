@@ -125,7 +125,7 @@ DB_TEST
 1>>
 ```
 
-This works because I have a **DS_GB_TEST** entry in the `freetds.conf`. See the [section on interface and freetds.conf files](#interface-or-freetds.conf-file)
+This works because I have a **DS_GB_TEST** entry in the `freetds.conf`. See the [section on interface and freetds.conf files](#interface-or-freetdsconf-file)
 
 To stop the container:
 
