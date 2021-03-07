@@ -44,13 +44,13 @@ Building it only installs the ASE server binaries. You have to run the database 
 
 This two steps approach allows to have the database data outside the container itself.
 
-1. Build the Docker image
+1. Build the Docker image. The ASE install in that built can take up to a dozen of minutes.
 
 ```console
 $ docker build -t sybase/server:latest .
 ```
 
-If you want to specify your fileserver from the command line instead of in the `Dockerfile`, run
+Alternatively, if you want to specify your fileserver from the command line instead of in the `Dockerfile`, run
 
 ```console
 $ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:latest .
@@ -59,21 +59,17 @@ $ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:la
 2. Run the image as **sybase** to create the database. Bind your host local folders as follow:
 
 ```
-docker run --user=sybase \
+$ docker run --user=sybase \
     -v $HOME/sybase/data:/data \
     -v $HOME/sybase/ase:/home/sybase/ase \
     -it sybase/server:latest \
     bash
 ```
 
-3. On the Docker image session:
+3. Run the database creation on the Docker image session. It is also a long process (up to some dozens of minutes):
 
 ```
-$ . /opt/sap/SYBASE.sh
-
-$ $SYBASE/$SYBASE_ASE/bin/srvbuildres \
-    -r /home/sybase/cfg/ase.rs \
-    -D /home/sybase/ase
+$ create_dabatase.sh
 ```
 
 This completes the database creation. Since the data are created in bound volumes, they will live even after your container stops. And they can also be migrated.
