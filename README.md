@@ -166,7 +166,7 @@ This is *not* taking into account the **DB_TEST** database data in `sybase`
 
 ```console
 $ du -Lksh $HOME/sybase
-337M	/home/gbprod/sybase
+337M	/home/user/sybase
 ```
 
 And we're talking about a brand new database here. It will only grow in size.
