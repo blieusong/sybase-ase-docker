@@ -151,6 +151,26 @@ Feel free to change these in `ase.rs` in the `ressources` folder.
 - user : sa
 - password : sybase
 
+## Docker Image Size
+
+The generated image's size is **557MB**. It's probably as small as it can get.
+
+```console
+$ docker image ls
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+sybase/server   latest    1415df5f6e03   7 minutes ago   557MB
+ubuntu          focal     4dd97cefde62   3 days ago      72.9MB
+```
+
+This is *not* taking into account the **DB_TEST** database data in `sybase`
+
+```console
+$ du -Lksh $HOME/sybase
+337M	/home/gbprod/sybase
+```
+
+And we're talking about a brand new database here. It will only grow in size.
+
 ## Interface or freetds.conf file
 
 Since the container has that static IP:
