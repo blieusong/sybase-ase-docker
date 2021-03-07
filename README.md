@@ -78,7 +78,7 @@ $ $SYBASE/$SYBASE_ASE/bin/srvbuildres \
 
 This completes the database creation. Since the data are created in bound volumes, they will live even after your container stops. And they can also be migrated.
 
-4. Create a *virtual network*. This enables to attach other devices to it afterwards, and to assign a static IP to the container.
+4. Create a *virtual network*. This enables attaching other devices to it afterwards and to assign a static IP to the container.
 
 ```
 $ docker network create \
@@ -174,7 +174,7 @@ If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too,
     tds version = 5.0
 ```
 
-Remember that this 172.24.1.1 is only visible from the virtual interface inside the Docker host. To access **DB_TEST** from outside, you'll have to forward ports.
+Remember that this 172.24.1.1 is only visible from the virtual interface inside the Docker host or from any container attached to the virtual **sybase-bridge** network. To access **DB_TEST** from outside, you'll have to forward ports.
 
 ## Charset
 
