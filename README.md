@@ -12,6 +12,10 @@ Installer needs to be obtained from SAP here (it takes minutes to register, and 
 
 - https://www.sap.com/cmp/td/sap-ase-enterprise-edition-trial.html 
 
+The SAP ASE installation guide can also come in handy:
+
+- https://help.sap.com/viewer/23c3bb4a29be443ea887fa10871a30f8/16.0.4.0/en-US
+
 # Foreword 
 If you've ever felt like you need that ASE server playground on which you could try new things but no one could create an instance for you (for many reasons), then this Docker image will help.
 
