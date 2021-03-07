@@ -70,7 +70,7 @@ $ docker run --user=sybase \
     bash
 ```
 
-3. Run the database creation on the Docker image session. It is also a long process (up to some dozens of minutes):
+3. Run the database creation on the Docker image session. It is also a long process (up to a dozen of minutes):
 
 ```
 $ create_dabatase.sh
@@ -115,11 +115,11 @@ If you have proper clients installed, you can also try to open a database sessio
 $ fisql -Usa -Psybase -SDB_TEST
 Changed database context to 'master'.
 
-1>> select @@servername
+1>> select @@version
 2>> go
 
-------------------------------
-DB_TEST
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Adaptive Server Enterprise/16.0 SP03 PL02/EBF 27415 SMP/P/x86_64/SLES 11.1/ase160sp03pl02x/3096/64-bit/FBO/Fri Oct  6 04:51:57 2017
 
 (1 rows affected)
 1>>
