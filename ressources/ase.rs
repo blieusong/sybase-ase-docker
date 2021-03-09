@@ -8,7 +8,7 @@ sqlsrv.network_protocol_list: tcp
 sqlsrv.network_hostname_list: 0.0.0.0
 sqlsrv.network_port_list: 5000
 sqlsrv.application_type: USE_DEFAULT
-sqlsrv.server_page_size: USE_DEFAULT
+sqlsrv.server_page_size: 4096
 sqlsrv.force_buildmaster: no
 sqlsrv.master_device_physical_name: /data/master.dat
 sqlsrv.master_device_size: USE_DEFAULT
