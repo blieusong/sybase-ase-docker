@@ -38,7 +38,7 @@ $ mkdir -p ${HOME}/sybase/ase
 
 It needs to be in `$HOME` to match the `docker-compose.yml` file definition.
 
-Make sure `$HOME` has enough space. If not, you can symbolic link the `sybase` in your `$HOME` to some folder with more space:
+Make sure `$HOME` has enough space. If not, you can symbolic link the `sybase` in your `$HOME` to some folder with more space before running the above commands:
 
 ```
 $ ln -s $HOME/sybase /folder/with/plenty/of/space
@@ -64,25 +64,19 @@ Alternatively, if you want to specify your fileserver from the command line inst
 $ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:latest .
 ```
 
-2. Run the image as **sybase** to create the database. Bind your host local folders as follow:
+2. Run the database creation script on the Docker image session. It is also a long process (up to a dozen of minutes):
 
 ```
-$ docker run --user=sybase \
+$ docker run \
     -v $HOME/sybase/data:/data \
     -v $HOME/sybase/ase:/home/sybase/ase \
     -it sybase/server:latest \
-    bash
-```
-
-3. Run the database creation on the Docker image session. It is also a long process (up to a dozen of minutes):
-
-```
-$ create_dabatase.sh
+    create_database.sh
 ```
 
 This completes the database creation. Since the data are created in bound volumes, they will live even after your container stops. And they can also be migrated.
 
-4. Create a *virtual network*. This enables attaching other devices to it afterwards and to assign a static IP to the container.
+3. Create a *virtual network*. This enables attaching other devices to it afterwards and to assign a static IP to the container.
 
 ```
 $ docker network create \
@@ -93,13 +87,15 @@ $ docker network create \
     sybase-bridge
 ```
 
+Obviously, you might want to use a subnet which doesn't conflict with anything you might have already defined.
+
 # Running it
 
-Use **docker-compose** to start the Docker image.
+We start the Docker image with **docker-compose**.
 
 The `docker-compose.yml` file attaches the container to a **sybase-bridge** virtual network created above. It also assigns it the static IP **172.24.1.1** for easier later reference. 
 
-From the parent folder of the `docker-compose.yml` file, firing up the ASE server is as simple as :
+With everything in place, from the parent folder of the `docker-compose.yml` file, firing up the ASE server is as simple as :
 
 ```console
 $ docker-compose up -d
@@ -154,6 +150,7 @@ Feel free to change these in `ase.rs` in the `ressources` folder.
 - Dataserver name: DB_TEST
 - user: sa
 - password: sybase
+- pagesize: 4096
 
 ## Ressource Allocation
 - Memory: 4GB
