@@ -9,12 +9,12 @@ services:
       - $HOME/sybase/data:/data
       - $HOME/sybase/ase:/home/sybase/ase
     networks:
-      gbprod-bridge:
+      sybase-bridge:
 
     tty: true
     entrypoint: "/home/sybase/bin/entrypoint.sh"
 
 networks:
-  gbprod-bridge:
+  sybase-bridge:
     external: 
-      name: gbprod-bridge
+      name: sybase-bridge
