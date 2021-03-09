@@ -3,30 +3,21 @@ Sybase (SAP) ASE Server image
 
 Dockerfile for creating a Docker container running an ASE server.
 
-Adapted from:
-- https://github.com/Naaooj/sap-as-docker
-- https://github.com/dstore-dbap/sap-ase-docker
-- https://github.com/nguoianphu/docker-sybase
-
 Installer needs to be obtained from SAP here (it takes minutes to register, and SAP doesn't look too much at the details you provide):
 
 - https://www.sap.com/cmp/td/sap-ase-enterprise-edition-trial.html 
 
-The SAP ASE installation guide can also come in handy:
-
-- https://help.sap.com/viewer/23c3bb4a29be443ea887fa10871a30f8/16.0.4.0/en-US
-
 # Foreword 
-If you've ever felt like you need that ASE server playground on which you could try new things but no one could create an instance for you (for many reasons), then this Docker image will help.
+If you've ever needed that ASE server playground on which you could try new things but no one could create an instance for you (for many reasons), then this Docker image will help.
 
-# Prerequisite
+It will have you started in a few shell commands and 20 min (most of them waiting for the installer to complete).
+
+# Requirements
 
 You will need a recent Linux Docker host with
-- **docker**
-- **docker-compose**
-- *sudoer* rights or being part of the *docker* group
-
-If you miss one of those, head over to the [Docker website](https://docs.docker.com/engine/install/) for instructions.
+- at *least* 1GB of free disk space
+- 4GB of RAM for the ASE server (you change this down in the ressource file)
+- A working **docker** and **docker-compose** (the [Docker website](https://docs.docker.com/engine/install/) can help)
 
 You will also need to create the following folders on the Docker host to store the database data:
 
@@ -141,6 +132,7 @@ Feel free to change these in `ase.rs` in the `ressources` folder.
 
 ## Installation
 
+- Container hostname (on the sybase-bridge network): ase-server
 - ASE installation folder: `/opt/sap`
 - devices folder: `/data` on the container, mapped to `$HOME/sybase/data` on the host
 - database installation folder: `/home/sybase/ase`
@@ -153,6 +145,7 @@ Feel free to change these in `ase.rs` in the `ressources` folder.
 - pagesize: 4096
 
 ## Ressource Allocation
+
 - Memory: 4GB
 - CPUs: 2
 
@@ -186,7 +179,7 @@ Since the container has that static IP:
 
     172.24.1.1
 
-You use the following `interface` file to connect to the database
+You use the following `interface` file to connect to the database from the Linux host
 
 ```
 DB_TEST
@@ -204,3 +197,32 @@ If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too,
 ```
 
 Remember that this 172.24.1.1 is only visible from the virtual interface inside the Docker host or from any container attached to the virtual **sybase-bridge** network. To access **DB_TEST** from outside, you'll have to forward ports.
+
+If you connect from another container on the **sybase-bridge** network, you can refer to the server as *ase-server* instead of the using the IP.
+
+`interface` file:
+```
+DB_TEST
+    master tcp ether ase-server 5000
+    query tcp ether ase-server 5000
+```
+
+`freetds.conf` file
+```
+[DB_TEST]
+    host = ase-server
+    port = 5000
+    tds version = 5.0
+```
+
+# References
+
+Adapted from:
+
+- https://github.com/Naaooj/sap-as-docker
+- https://github.com/dstore-dbap/sap-ase-docker
+- https://github.com/nguoianphu/docker-sybase
+
+The SAP ASE installation guide can also come in handy if you want to reuse this image and tweak the settings:
+
+- https://help.sap.com/viewer/23c3bb4a29be443ea887fa10871a30f8/16.0.4.0/en-US
