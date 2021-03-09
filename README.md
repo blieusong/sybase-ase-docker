@@ -14,9 +14,9 @@ It will have you started in a few shell commands and 20 min (most of them waitin
 
 # Requirements
 
-You will need a recent Linux Docker host with
+You will need a recent x64 Linux Docker host with
 - at *least* 1GB of free disk space
-- 4GB of RAM for the ASE server (you change this down in the ressource file)
+- 4GB of RAM for the ASE server (you can change this in the ressource file)
 - A working **docker** and **docker-compose** (the [Docker website](https://docs.docker.com/engine/install/) can help)
 
 You will also need to create the following folders on the Docker host to store the database data:
@@ -198,7 +198,7 @@ If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too,
 
 Remember that this 172.24.1.1 is only visible from the virtual interface inside the Docker host or from any container attached to the virtual **sybase-bridge** network. To access **DB_TEST** from outside, you'll have to forward ports.
 
-If you connect from another container on the **sybase-bridge** network, you can refer to the server as *ase-server* instead of the using the IP.
+If you connect from another container on the **sybase-bridge** network, you can refer to the server as *ase-server* instead of using the IP.
 
 `interface` file:
 ```
@@ -207,7 +207,7 @@ DB_TEST
     query tcp ether ase-server 5000
 ```
 
-`freetds.conf` file
+`freetds.conf` file:
 ```
 [DB_TEST]
     host = ase-server
