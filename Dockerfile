@@ -49,9 +49,11 @@ COPY --chown=sybase ressources/create_database.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
-#trick to create the directory with proper rights.
+# trick to create the directory with proper rights.
 COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
 
-RUN apt -y remove curl unzip
+# remove useless packages
+RUN apt -y remove curl unzip \
+    && apt -y autoremove
 
 ENV PATH=/home/sybase/bin:$PATH
