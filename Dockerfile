@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:20.04
 
 # define your own http file server here (or pass it as argument to docker build)
 ARG FILESERVER=${YOUR_OWN_SERVER}
