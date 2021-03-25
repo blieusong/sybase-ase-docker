@@ -44,6 +44,12 @@ RUN groupadd sybase \
 
 # RUN ["/bin/bash", "-c", "echo \"sybase\nsybase\" | (passwd sybase)"]
 
+# remove useless packages
+RUN apt -y remove curl unzip \
+    && apt -y autoremove
+
+ENV PATH=/home/sybase/bin:$PATH
+
 COPY --chown=sybase ressources/ase.rs /home/sybase/cfg/
 COPY --chown=sybase ressources/create_database.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
@@ -51,9 +57,3 @@ COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
 # trick to create the directory with proper rights.
 COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
-
-# remove useless packages
-RUN apt -y remove curl unzip \
-    && apt -y autoremove
-
-ENV PATH=/home/sybase/bin:$PATH
