@@ -1,4 +1,6 @@
 #!/bin/sh
+. /opt/sap/SYBASE.sh
+
 /home/sybase/bin/ase_start.sh DB_TEST
 
-while true; do sleep 3000; done
+tail -f /home/sybase/ase/$SYBASE_ASE/install/DB_TEST.log
