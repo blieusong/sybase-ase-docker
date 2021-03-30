@@ -5,7 +5,7 @@ SERVER_NAME=$1
 
 echo -en "Starting server \e[0;34m${SERVER_NAME}\e[0m: "
 
-startserver -f /home/sybase/ase/$SYBASE_ASE/install/RUN_${SERVER_NAME} >/dev/null
+startserver -f $SYBASE/$SYBASE_ASE/install/RUN_${SERVER_NAME} >/dev/null
 
 ret=$?
 
