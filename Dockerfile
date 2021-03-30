@@ -5,17 +5,17 @@ ARG FILESERVER=${YOUR_OWN_SERVER}
 
 ENV ASE_INSTALL_TGZ=${FILESERVER}/ASE_Suite.linuxamd64.tgz
 
+COPY ressources/response_file.txt /tmp/response_file.txt
+
 # needed by the ASE installer
 RUN apt update \
+    && apt upgrade -y \
     && apt -y install \
     curl \
     libaio1 \
-    unzip
-
-COPY ressources/response_file.txt /tmp/response_file.txt
-
+    unzip \
 # Installs ASE and then remove useless stuffs
-RUN cd /tmp \
+    && cd /tmp \
     && curl ${ASE_INSTALL_TGZ} | tar -xzf - \
     && ./setup.bin -f response_file.txt -i silent -DAGREE_TO_SAP_LICENSE=true -DRUN_SILENT=true \
     && rm -rf /tmp/* \
@@ -36,18 +36,16 @@ RUN cd /tmp \
     && rm -fr /opt/sap/OCS-16_0/lib/*[!6][!4].a \
     && rm -fr /opt/sap/OCS-16_0/lib/*[!6][!4].so \
     # remove graphical apps and java junks
-    && cd /opt/sap/ASE-16_0/bin && rm asecfg ddlgen *java sqlloc sqlupgrade srvbuild 
+    && cd /opt/sap/ASE-16_0/bin && rm asecfg ddlgen *java sqlloc sqlupgrade srvbuild \
+# remove useless packages
+    && apt -y remove curl unzip \
+    && apt -y autoremove
 
 RUN groupadd sybase \
     && useradd -g sybase -s /bin/bash sybase \
     && chown -R sybase:sybase /opt/sap
 
 # RUN ["/bin/bash", "-c", "echo \"sybase\nsybase\" | (passwd sybase)"]
-
-# remove useless packages
-RUN apt -y remove curl unzip \
-    && apt -y autoremove
-
 ENV PATH=/home/sybase/bin:$PATH
 
 COPY --chown=sybase ressources/ase.rs /home/sybase/cfg/
@@ -57,3 +55,8 @@ COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
 # trick to create the directory with proper rights.
 COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
+# compressed default database (because install is too slow)
+COPY --chown=sybase dbdata/db_setup/ /opt/sap/
+COPY --chown=sybase dbdata/data.tar.gz /tmp/
+
+ENTRYPOINT [ "/home/sybase/bin/entrypoint.sh" ]
