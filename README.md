@@ -19,27 +19,22 @@ You will need a recent x64 Linux Docker host with
 - 4GB of RAM for the ASE server (you can change this in the ressource file)
 - A working **docker** and **docker-compose** (the [Docker website](https://docs.docker.com/engine/install/) can help)
 
-You will also need to create the following folders on the Docker host to store the database data:
+# Getting Started
+I share the image on Docker Hub : https://hub.docker.com/repository/docker/blieusong/sybase-ase
 
-```console
-$ mkdir -p ${HOME}/sybase/data
-
-$ mkdir -p ${HOME}/sybase/ase
-```
-
-It needs to be in `$HOME` to match the `docker-compose.yml` file definition.
-
-Make sure `$HOME` has enough space. If not, you can symbolic link the `sybase` in your `$HOME` to some folder with more space before running the above commands:
+So you can get started simply by firing up **docker-compose**:
 
 ```
-$ ln -s $HOME/sybase /folder/with/plenty/of/space
+docker-compose up -d
 ```
 
-# Build and Database Creation Instructions
+That docker-compose binds a local volume (**sybase-data**) to the container, so make sure `/var/lib/docker` has enough space to host your databases.
 
-The `Dockerfile` isn't enough to get you started. 
+You can then access the ASE server on port 5000 of the Docker host.
 
-Building it only installs the ASE server binaries. You have to run the database creation *afterwards*. 
+# Build Instructions
+
+Building the `Dockerfile` only installs the ASE server binaries. You have to run the database creation *afterwards*. 
 
 This two steps approach allows to have the database data outside the container itself.
 
@@ -55,52 +50,66 @@ Alternatively, if you want to specify your fileserver from the command line inst
 $ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:latest .
 ```
 
-2. Run the database creation script on the Docker image session. It is also a long process (up to a dozen of minutes):
+# Creating Your Own Database
+The provider `Dockerfile` comes with a "preloaded" database in:
+
+- `dbdata/dbsetup/`
+- `dbdata/data.tar.gz`
+
+That database is created using the `ase.rs` file's content as parameters.
+
+To generate your own database, and incorporate it into your own docker image, follow these (tricky) steps:
+
+1. Update `ase.rs` according to your needs.
+
+2. Run the database creation script on the Docker image session. Make sure you bind `ase.rs`.
 
 ```
 $ docker run \
     -v $HOME/sybase/data:/data \
     -v $HOME/sybase/ase:/home/sybase/ase \
-    -it sybase/server:latest \
+    -v ressources/ase.rs:/home/sybase/cfg/ase.rs \
+    -it blieusong/sybase-ase:latest \
     create_database.sh
 ```
 
-This completes the database creation. Since the data are created in bound volumes, they will live even after your container stops. And they can also be migrated.
+The database and associated configuration files are created, respectively in your local `$HOME/sybase/data` and `$HOME/sybase/ase`.
 
-3. Create a *virtual network*. This enables attaching other devices to it afterwards and to assign a static IP to the container.
+3. Generate the database data archive
 
 ```
-$ docker network create \
-    --driver=bridge \
-    --subnet=172.24.0.0/16 \
-    --ip-range=172.24.1.0/24 \
-    --gateway=172.24.1.254 \
-    sybase-bridge
+cd $HOME/sybase
+tar -czf data.tar.gz data
+```
+and copy the `tar.gz` into the `dbdata` folder
+
+4. Copy the config folder into the `dbdata` folder
+
+```
+rm -fr $YOUR_PROJECT_DIR/dbdata/db_setup
+cp -r $HOME/sybase/ase $YOUR_PROJECT_DIR/dbdata/db_setup
 ```
 
-Obviously, you might want to use a subnet which doesn't conflict with anything you might have already defined.
+At this stage, you can remove `$HOME/sybase` if you want.
 
-# Running it
+5. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
 
-We start the Docker image with **docker-compose**.
+6. Rebuild the `Dockerfile`. After that the embedded database which is fired up at first launch shall have been created with your parameters.
 
-The `docker-compose.yml` file attaches the container to a **sybase-bridge** virtual network created above. It also assigns it the static IP **172.24.1.1** for easier later reference. 
+# Checking That It Works
 
-With everything in place, from the parent folder of the `docker-compose.yml` file, firing up the ASE server is as simple as :
+If you have proper clients installed, you can try to open a database session. For example, using [FreeTDS](https://www.freetds.org)'s **fisql**:
 
-```console
-$ docker-compose up -d
+1. Update your `/usr/local/etc/freetds.conf` to add the following entry:
+
+```
+[DB_TEST]
+    host = localhost
+    port = 5000
+    tds version = 5.0
 ```
 
-To check that it runs, use `docker ps`:
-
-```console
-$ docker ps
-CONTAINER ID   IMAGE                  COMMAND                  CREATED        STATUS         PORTS     NAMES
-3ebf01013fef   sybase/server:latest   "/home/sybase/bin/en…"   11 hours ago   Up 2 seconds             sybase-ase-docker_ase-server_1
-```
-
-If you have proper clients installed, you can also try to open a database session. For example, using [FreeTDS](https://www.freetds.org)'s **fisql**:
+Then use **fisql** to start a session:
 
 ```console
 $ fisql -Usa -Psybase -SDB_TEST
@@ -115,16 +124,6 @@ Adaptive Server Enterprise/16.0 SP03 PL02/EBF 27415 SMP/P/x86_64/SLES 11.1/ase16
 (1 rows affected)
 1>>
 ```
-
-This works because I have a **DB_TEST** entry in the `freetds.conf` file. See the [section on interface and freetds.conf files](#interface-or-freetdsconf-file)
-
-To stop the container:
-
-```console
-$ docker stop 3ebf01013fef
-```
-
-Note that the ID is generated for every Docker session. You'll need to get it with `docker ps`.
 
 # Technical Details
 
@@ -153,64 +152,21 @@ Feel free to change these in `ase.rs` in the `ressources` folder.
 
 I left **iso_1** which comes by default, because I use that at work. But you may want to switch it to something more modern like **UTF-8**.
 
-## Docker Image Size
-
-The generated image's size is **557MB**. It's probably as small as it can get.
-
-```console
-$ docker image ls
-REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
-sybase/server   latest    1415df5f6e03   7 minutes ago   557MB
-ubuntu          focal     4dd97cefde62   3 days ago      72.9MB
-```
-
-This is *not* taking into account the **DB_TEST** database data in `sybase`
-
-```console
-$ du -Lksh $HOME/sybase
-337M	/home/user/sybase
-```
-
-And we're talking about a brand new database here. It will only grow in size.
-
 ## Interface or freetds.conf file
 
-Since the container has that static IP:
-
-    172.24.1.1
-
-You use the following `interface` file to connect to the database from the Linux host
+If you have a Sybase client, add the following entry to the `interface` file to connect to the database from the Linux host
 
 ```
 DB_TEST
-    master tcp ether 172.24.1.1 5000
-    query tcp ether 172.24.1.1 5000
+    master tcp ether localhost 5000
+    query tcp ether localhost 5000
 ```
 
 If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too, but you can also add that entry to `freetds.conf`
 
 ```
 [DB_TEST]
-    host = 172.24.1.1
-    port = 5000
-    tds version = 5.0
-```
-
-Remember that this 172.24.1.1 is only visible from the virtual interface inside the Docker host or from any container attached to the virtual **sybase-bridge** network. To access **DB_TEST** from outside, you'll have to forward ports.
-
-If you connect from another container on the **sybase-bridge** network, you can refer to the server as *ase-server* instead of using the IP.
-
-`interface` file:
-```
-DB_TEST
-    master tcp ether ase-server 5000
-    query tcp ether ase-server 5000
-```
-
-`freetds.conf` file:
-```
-[DB_TEST]
-    host = ase-server
+    host = localhost
     port = 5000
     tds version = 5.0
 ```
