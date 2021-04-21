@@ -10,19 +10,18 @@ Installer needs to be obtained from SAP here (it takes minutes to register, and 
 # Foreword 
 If you've ever needed that ASE server playground on which you could try new things but no one could create an instance for you (for many reasons), then this Docker image will help.
 
-It will have you started in a few shell commands and 20 min (most of them waiting for the installer to complete).
+It gets you started instantly, if you pull the image I share on Docker Hub (see Getting Started).
 
 # Requirements
-
 You will need a recent x64 Linux Docker host with
 - at *least* 1GB of free disk space
 - 4GB of RAM for the ASE server (you can change this in the ressource file)
 - A working **docker** and **docker-compose** (the [Docker website](https://docs.docker.com/engine/install/) can help)
 
 # Getting Started
-I share the image on Docker Hub : https://hub.docker.com/repository/docker/blieusong/sybase-ase
+I share the image on Docker Hub : https://hub.docker.com/repository/docker/blieusong/sybase-ase.
 
-So you can get started simply by firing up **docker-compose**:
+You can get started by simply firing up **docker-compose**:
 
 ```
 docker-compose up -d
@@ -33,6 +32,7 @@ That docker-compose binds a local volume (**sybase-data**) to the container, so 
 You can then access the ASE server on port 5000 of the Docker host.
 
 # Build Instructions
+The image I share is configured with 4k pagesize and *iso_1* charset. You can build the Dockerfile yourself to choose different settings.
 
 Building the `Dockerfile` only installs the ASE server binaries. You have to run the database creation *afterwards*. 
 
@@ -41,13 +41,14 @@ This two steps approach allows to have the database data outside the container i
 1. Build the Docker image. The ASE installation in that build can take up to a dozen of minutes.
 
 ```console
-$ docker build -t sybase/server:latest .
+$ docker build -t sybase/ase-server:latest .
 ```
+Don't forget to set the **FILESERVER** environment variable in the `Dockerfile` to tell Docker where to get the ASE install archive.
 
-Alternatively, if you want to specify your fileserver from the command line instead of in the `Dockerfile`, run
+You can also specify your fileserver from the command line instead of in the `Dockerfile`:
 
 ```console
-$ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/server:latest .
+$ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/ase-server:latest .
 ```
 
 # Creating Your Own Database
