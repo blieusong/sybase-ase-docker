@@ -45,47 +45,48 @@ To generate your own database, and incorporate it into your own docker image, bu
 
 2. Build the Docker image. The **FILESERVER** variable can also be set in the `Dockerfile` itself prior to running that command.
 
-```
-$ docker build --build-arg FILESERVER="http://whatever.com/" -t blieusong/ase-server-install .
-```
+    ```
+    $ docker build --build-arg FILESERVER="http://whatever.com/" -t blieusong/ase-server-install .
+    ```
 
 3. Run the newly build container to launch the database creation script.
 
-```
-$ docker run \
-    -v $HOME/sybase/data:/data \
-    -v $HOME/sybase/ase:/home/sybase/ase \
-    -it blieusong/ase-server-install
-```
+    ```
+    $ docker run \
+        -v $HOME/sybase/data:/data \
+        -v $HOME/sybase/ase:/home/sybase/ase \
+        -it blieusong/ase-server-install
+    ```
 
-The database and associated configuration files are created, respectively in your local `$HOME/sybase/data` and `$HOME/sybase/ase`.
+   The database and associated configuration files are created, respectively in your local `$HOME/sybase/data` and `$HOME/sybase/ase`.
 
 ## Building the Final ASE Server Container
 The ASE Server `Dockerfile` lies in the `run_container` folder
 
 1. Generate the database data archive
 
-```
-cd $HOME/sybase
-tar -czf data.tar.gz data
-```
-and copy the `tar.gz` into the `run_container/dbdata` folder.
+    ```
+    cd $HOME/sybase
+    tar -czf data.tar.gz data
+    ```
+
+   and copy the `tar.gz` into the `run_container/dbdata` folder.
 
 2. Copy the config folder into the `run_container/dbdata` folder
 
-```
-cp -r $HOME/sybase/ase $PROJECT_DIR/run_container/dbdata/db_setup
-```
+    ```
+    cp -r $HOME/sybase/ase $PROJECT_DIR/run_container/dbdata/db_setup
+    ```
 
-At this stage, you can remove `$HOME/sybase` if you want.
+   At this stage, you can remove `$HOME/sybase` if you want.
 
 3. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
 
 4. Build the `Dockerfile` in the `run_container` folder.
 
-```
-docker build -t blieusong/ase-server .
-```
+    ```
+    docker build -t blieusong/ase-server .
+    ```
 
 # Checking That It Works
 
@@ -93,28 +94,28 @@ If you have proper clients installed, you can try to open a database session. Fo
 
 1. Update your `/usr/local/etc/freetds.conf` to add the following entry:
 
-```
-[DB_TEST]
-    host = localhost
-    port = 5000
-    tds version = 5.0
-```
+    ```
+    [DB_TEST]
+        host = localhost
+        port = 5000
+        tds version = 5.0
+    ```
 
-Then use **fisql** to start a session:
+2. Then use **fisql** to start a session:
 
-```console
-$ fisql -Usa -Psybase -SDB_TEST
-Changed database context to 'master'.
+    ```console
+    $ fisql -Usa -Psybase -SDB_TEST
+    Changed database context to 'master'.
 
-1>> select @@version
-2>> go
+    1>> select @@version
+    2>> go
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Adaptive Server Enterprise/16.0 SP03 PL02/EBF 27415 SMP/P/x86_64/SLES 11.1/ase160sp03pl02x/3096/64-bit/FBO/Fri Oct  6 04:51:57 2017
+    ----------------------------------------------------------------------------------------------------------------------------------  -----------------------------------------------------------------------------------------------------------------------------
+    Adaptive Server Enterprise/16.0 SP03 PL02/EBF 27415 SMP/P/x86_64/SLES 11.1/ase160sp03pl02x/3096/64-bit/FBO/Fri Oct  6 04:51:57  2017
 
-(1 rows affected)
-1>>
-```
+    (1 rows affected)
+    1>>
+    ```
 
 # Technical Details
 
@@ -147,20 +148,20 @@ I left **iso_1** which comes by default, because I use that at work. But you may
 
 If you have a Sybase client, add the following entry to the `interface` file to connect to the database from the Linux host
 
-```
-DB_TEST
-    master tcp ether localhost 5000
-    query tcp ether localhost 5000
-```
+    ```
+    DB_TEST
+        master tcp ether localhost 5000
+        query tcp ether localhost 5000
+    ```
 
 If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too, but you can also add that entry to `freetds.conf`
 
-```
-[DB_TEST]
-    host = localhost
-    port = 5000
-    tds version = 5.0
-```
+    ```
+    [DB_TEST]
+        host = localhost
+        port = 5000
+        tds version = 5.0
+    ```
 
 # References
 
