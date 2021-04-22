@@ -31,35 +31,22 @@ That docker-compose binds a local volume (**sybase-data**) to the container, so 
 
 You can then access the ASE server on port 5000 of the Docker host.
 
-# Build Instructions
-The image I share is configured with 4k pagesize and *iso_1* charset. You can build the Dockerfile yourself to choose different settings.
-
-Building the `Dockerfile` only installs the ASE server binaries. You have to run the database creation *afterwards*. 
-
-This two steps approach allows to have the database data outside the container itself.
-
-1. Build the Docker image. The ASE installation in that build can take up to a dozen of minutes.
-
-```console
-$ docker build -t blieusong/ase-server-install .
-```
-Don't forget to set the **FILESERVER** environment variable in the `Dockerfile` to tell Docker where to get the ASE install archive.
-
-You can also specify your fileserver from the command line instead of in the `Dockerfile`:
-
-```console
-$ docker build --build-arg FILESERVER="http://whatever.com/" -t blieusong/ase-server-install .
-```
-
 # Creating Your Own Database
+The image (**blieusong/ase-server**) I share is configured with 4k pagesize and *iso_1* charset. You can build the Dockerfiles yourself to use different settings.
+
+The build is done in two steps:
+1. **ase-server-install** container, which only serves to run the database installation,
+2. **ase-server** container, which is the final image we'll use, and which embeds the database files from the previous step. This results in a container which fires up much faster for anyone who pulls it from a repository.
+
+## Building the Install Container
 To generate your own database, and incorporate it into your own docker image, build the `Dockerfile` in the `install_container` folder by following these (tricky) steps :
 
 1. Update `ase.rs` according to your needs.
 
-2. Build the Docker image
+2. Build the Docker image. The **FILESERVER** variable can also be set in the `Dockerfile` itself prior to running that command.
 
 ```
-$ docker build -t blieusong/ase-server-install .
+$ docker build --build-arg FILESERVER="http://whatever.com/" -t blieusong/ase-server-install .
 ```
 
 3. Run the newly build container to launch the database creation script.
@@ -73,7 +60,10 @@ $ docker run \
 
 The database and associated configuration files are created, respectively in your local `$HOME/sybase/data` and `$HOME/sybase/ase`.
 
-4. Generate the database data archive
+## Building the Final ASE Server Container
+The ASE Server `Dockerfile` lies in the `run_container` folder
+
+1. Generate the database data archive
 
 ```
 cd $HOME/sybase
@@ -81,7 +71,7 @@ tar -czf data.tar.gz data
 ```
 and copy the `tar.gz` into the `run_container/dbdata` folder.
 
-5. Copy the config folder into the `run_container/dbdata` folder
+2. Copy the config folder into the `run_container/dbdata` folder
 
 ```
 cp -r $HOME/sybase/ase $PROJECT_DIR/run_container/dbdata/db_setup
@@ -89,9 +79,9 @@ cp -r $HOME/sybase/ase $PROJECT_DIR/run_container/dbdata/db_setup
 
 At this stage, you can remove `$HOME/sybase` if you want.
 
-6. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
+3. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
 
-7. Build the `Dockerfile` in the `run_container` folder.
+4. Build the `Dockerfile` in the `run_container` folder.
 
 ```
 docker build -t blieusong/ase-server .
