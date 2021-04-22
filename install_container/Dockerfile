@@ -52,11 +52,7 @@ COPY --chown=sybase ressources/ase.rs /home/sybase/cfg/
 COPY --chown=sybase ressources/create_database.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
-COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
 # trick to create the directory with proper rights.
 COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
-# compressed default database (because install is too slow)
-COPY --chown=sybase dbdata/db_setup/ /opt/sap/
-COPY --chown=sybase dbdata/data.tar.gz /tmp/
 
-ENTRYPOINT [ "/home/sybase/bin/entrypoint.sh" ]
+ENTRYPOINT [ "create_database.sh" ]

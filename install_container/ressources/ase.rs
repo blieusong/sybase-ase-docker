@@ -11,8 +11,8 @@ sqlsrv.application_type: USE_DEFAULT
 sqlsrv.server_page_size: 4096
 sqlsrv.force_buildmaster: no
 sqlsrv.master_device_physical_name: /data/master.dat
-sqlsrv.master_device_size: USE_DEFAULT
-sqlsrv.master_database_size: USE_DEFAULT
+sqlsrv.master_device_size: 78
+sqlsrv.master_database_size: 39
 sqlsrv.errorlog: USE_DEFAULT
 sqlsrv.do_upgrade: no
 sqlsrv.sybsystemprocs_device_physical_name: /data/sybsystemprocs.dat
@@ -32,7 +32,7 @@ sqlsrv.sybpcidb_device_size: USE_DEFAULT
 sqlsrv.sybpcidb_database_size: USE_DEFAULT
 # If sqlsrv.do_optimize_config is set to yes, both sqlsrv.avail_physical_memory and sqlsrv.avail_cpu_num need to be set.
 sqlsrv.do_optimize_config: yes
-sqlsrv.avail_physical_memory: 4096
+sqlsrv.avail_physical_memory: 2048
 sqlsrv.avail_cpu_num: 2
 # Valid only if Remote Command and Control Agent for ASE is installed
 sqlsrv.configure_remote_command_and_control_agent_ase: no
