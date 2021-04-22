@@ -41,61 +41,61 @@ This two steps approach allows to have the database data outside the container i
 1. Build the Docker image. The ASE installation in that build can take up to a dozen of minutes.
 
 ```console
-$ docker build -t sybase/ase-server:latest .
+$ docker build -t blieusong/ase-server-install .
 ```
 Don't forget to set the **FILESERVER** environment variable in the `Dockerfile` to tell Docker where to get the ASE install archive.
 
 You can also specify your fileserver from the command line instead of in the `Dockerfile`:
 
 ```console
-$ docker build --build-arg FILESERVER="http://whatever.com/" -t sybase/ase-server:latest .
+$ docker build --build-arg FILESERVER="http://whatever.com/" -t blieusong/ase-server-install .
 ```
 
 # Creating Your Own Database
-The provider `Dockerfile` comes with a "preloaded" database in:
-
-- `dbdata/dbsetup/`
-- `dbdata/data.tar.gz`
-
-That database is created using the `ase.rs` file's content as parameters.
-
-To generate your own database, and incorporate it into your own docker image, follow these (tricky) steps:
+To generate your own database, and incorporate it into your own docker image, build the `Dockerfile` in the `install_container` folder by following these (tricky) steps :
 
 1. Update `ase.rs` according to your needs.
 
-2. Run the database creation script on the Docker image session. Make sure you bind `ase.rs`.
+2. Build the Docker image
+
+```
+$ docker build -t blieusong/ase-server-install .
+```
+
+3. Run the newly build container to launch the database creation script.
 
 ```
 $ docker run \
     -v $HOME/sybase/data:/data \
     -v $HOME/sybase/ase:/home/sybase/ase \
-    -v ressources/ase.rs:/home/sybase/cfg/ase.rs \
-    -it blieusong/sybase-ase:latest \
-    create_database.sh
+    -it blieusong/ase-server-install
 ```
 
 The database and associated configuration files are created, respectively in your local `$HOME/sybase/data` and `$HOME/sybase/ase`.
 
-3. Generate the database data archive
+4. Generate the database data archive
 
 ```
 cd $HOME/sybase
 tar -czf data.tar.gz data
 ```
-and copy the `tar.gz` into the `dbdata` folder
+and copy the `tar.gz` into the `run_container/dbdata` folder.
 
-4. Copy the config folder into the `dbdata` folder
+5. Copy the config folder into the `run_container/dbdata` folder
 
 ```
-rm -fr $YOUR_PROJECT_DIR/dbdata/db_setup
-cp -r $HOME/sybase/ase $YOUR_PROJECT_DIR/dbdata/db_setup
+cp -r $HOME/sybase/ase $PROJECT_DIR/run_container/dbdata/db_setup
 ```
 
 At this stage, you can remove `$HOME/sybase` if you want.
 
-5. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
+6. replace `/home/sybase/ase` with `/opt/sap` (since we move the configuration files there in the Dockerfile) in every file under `db_setup/ASE-16-0`.
 
-6. Rebuild the `Dockerfile`. After that the embedded database which is fired up at first launch shall have been created with your parameters.
+7. Build the `Dockerfile` in the `run_container` folder.
+
+```
+docker build -t blieusong/ase-server .
+```
 
 # Checking That It Works
 
