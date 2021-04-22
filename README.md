@@ -148,20 +148,20 @@ I left **iso_1** which comes by default, because I use that at work. But you may
 
 If you have a Sybase client, add the following entry to the `interface` file to connect to the database from the Linux host
 
-    ```
-    DB_TEST
-        master tcp ether localhost 5000
-        query tcp ether localhost 5000
-    ```
+```
+DB_TEST
+    master tcp ether localhost 5000
+    query tcp ether localhost 5000
+```
 
 If you use [FreeTDS](https://www.freetds.org), the `interface` file will do too, but you can also add that entry to `freetds.conf`
 
-    ```
-    [DB_TEST]
-        host = localhost
-        port = 5000
-        tds version = 5.0
-    ```
+```
+[DB_TEST]
+    host = localhost
+    port = 5000
+    tds version = 5.0
+```
 
 # References
 
