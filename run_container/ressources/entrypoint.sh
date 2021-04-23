@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# gracefully stops the ASE server if container is stopped.
+shutdown() {
+    /home/sybase/bin/ase_stop.sh DB_TEST
+}
+
+trap 'shutdown' SIGTERM
+
 . /opt/sap/SYBASE.sh
 
 ret=0
