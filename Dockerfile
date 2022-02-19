@@ -1,9 +1,7 @@
 FROM ubuntu:20.04
 
-# define your own http file server here (or pass it as argument to docker build)
-ARG FILESERVER=${YOUR_OWN_SERVER}
-
-ENV ASE_INSTALL_TGZ=${FILESERVER}/ASE_Suite.linuxamd64.tgz
+# path to the ASE server suite installer (ASE_Suite.linuxamd64.tgz)
+ARG ASE_INSTALL_TGZ="http//www.yourserver.com/ASE_Suite.linuxamd64.tgz"
 
 COPY ressources/response_file.txt /tmp/response_file.txt
 
@@ -49,10 +47,16 @@ RUN groupadd sybase \
 ENV PATH=/home/sybase/bin:$PATH
 
 COPY --chown=sybase ressources/ase.rs /home/sybase/cfg/
-COPY --chown=sybase ressources/create_database.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
 COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
-# trick to create the directory with proper rights.
-COPY --chown=sybase ressources/ase.rs /home/sybase/ase/
 
-ENTRYPOINT [ "create_database.sh" ]
+# We create the database itself but then zip it and delete
+# the data folder to keep the image as small as possible.
+# This archive is unpacked in /data upon first launch. /data
+# should be bound to a Docker volume for persistence.
+RUN . /opt/sap/SYBASE.sh \
+    && $SYBASE/$SYBASE_ASE/bin/srvbuildres -r /home/sybase/cfg/ase.rs -D /opt/sap \
+    && tar -czf /tmp/data.tar.gz /data \
+    && rm -fr /data 
+
+COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/
