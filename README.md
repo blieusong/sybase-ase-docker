@@ -14,41 +14,45 @@ on Docker Hub (see Getting Started).
 # Requirements
 You will need a recent x64 Linux Docker host with
 - at *least* 1GB of free disk space
-- 4GB of RAM for the ASE server (you can change this in the ressource file)
+- 2GB of *available* RAM for the ASE server (you can change this in the
+  ressource file)
 
 # Getting Started
 I share the image on Docker Hub : 
-https://hub.docker.com/repository/docker/blieusong/sybase-ase.
+https://hub.docker.com/repository/docker/blieusong/ase-server.
 
-You can get started by simply firing up **docker-compose**:
+You can get started by simply firing up **docker-compose** from the root folder of this project:
 
 ```
 docker-compose up -d
 ```
 
-That docker-compose binds a local volume (**sybase-data**) to the container,
+**docker-compose** binds a local volume (**sybase-data**) to the container,
 so make sure `/var/lib/docker` has enough space to host your databases.
 
 You can then access the ASE server on port 5000 of the Docker host.
 
 # Creating Your Own Database
-The image (**blieusong/ase-server**) I share is configured with 4k pagesize and
-*iso_1* charset. You can build the Dockerfiles yourself to use different settings.
+The image (**blieusong/ase-server**) I share is configured with 2k pagesize and
+*iso_1* charset. It requires 2Gb of memory. You can use different settings:
 
 1. Update `ressources/ase.rs` according to your needs,
-2. Build the Docker image. The **ASE_INSTALL_TGZ** variable can also be set in 
-   the `Dockerfile` itself prior to running that command.
+2. Build the Docker image. 
 
     ```bash
     $ docker build --build-arg ASE_INSTALL_TGZ="http://whatever.com/ASE_Suite.linuxamd64.tgz" -t blieusong/ase-server .
     ```
 
+   The **ASE_INSTALL_TGZ** variable can also be set in the `Dockerfile` itself
+   prior to running the `docker build` command.
+
 # Checking That It Works
-Once the container (and hence the database server) is fired up, try to open a
+Once the container (and hence the database server) is up, try to open a
 database session. For example, using [FreeTDS](https://www.freetds.org)'s 
 **fisql**:
 
-1. Update your `/usr/local/etc/freetds.conf` to add the following entry:
+1. Update your `freetds.conf` (in `/etc/freetds` or `/usr/local/etc`) and add
+   the following entry:
 
     ```
     [DB_TEST]
@@ -73,6 +77,11 @@ database session. For example, using [FreeTDS](https://www.freetds.org)'s
     1>>
     ```
 
+   You can alternatively use the provided `freetds.conf`.
+
+   ```
+   fisql -I${THIS_PROJECT_FOLDER}/config/freetds.conf -Usa -Psybase -SDB_TEST
+   ```
 # Technical Details
 
 Feel free to change these in `ase.rs` in the `ressources` folder.

@@ -25,7 +25,9 @@ sqlsrv.tempdb_device_physical_name: /data/tempdb.dat
 sqlsrv.tempdb_device_size: USE_DEFAULT
 sqlsrv.tempdb_database_size: USE_DEFAULT
 sqlsrv.default_backup_server: ASE_BACKUP
-#sqlsrv.addl_cmdline_parameters: PUT_ANY_ADDITIONAL_COMMAND_LINE_PARAMETERS_HERE
+# Additional param to dataserver cmd to skip some check that make server crash
+# https://answers.sap.com/questions/13386863/i-updated-my-system-and-now-server-is-crahing.html 
+sqlsrv.addl_cmdline_parameters: -T11889
 sqlsrv.do_configure_pci: no
 sqlsrv.sybpcidb_device_physical_name: PUT_THE_PATH_OF_YOUR_SYBPCIDB_DATA_DEVICE_HERE
 sqlsrv.sybpcidb_device_size: USE_DEFAULT

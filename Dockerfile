@@ -47,8 +47,6 @@ RUN groupadd sybase \
 ENV PATH=/home/sybase/bin:$PATH
 
 COPY --chown=sybase ressources/ase.rs /home/sybase/cfg/
-COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
-COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 
 # We create the database itself but then zip it and delete
 # the data folder to keep the image as small as possible.
@@ -57,6 +55,8 @@ COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 RUN . /opt/sap/SYBASE.sh \
     && $SYBASE/$SYBASE_ASE/bin/srvbuildres -r /home/sybase/cfg/ase.rs -D /opt/sap \
     && tar -czf /tmp/data.tar.gz /data \
-    && rm -fr /data 
+    && rm -fr /data
 
+COPY --chown=sybase ressources/ase_start.sh /home/sybase/bin/
+COPY --chown=sybase ressources/ase_stop.sh /home/sybase/bin/
 COPY --chown=sybase ressources/entrypoint.sh /home/sybase/bin/

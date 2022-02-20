@@ -25,5 +25,5 @@ fi
 
 /home/sybase/bin/ase_start.sh DB_TEST
 
-while true; do sleep 3000; done
-#tail -f $SYBASE/$SYBASE_ASE/install/DB_TEST.log
+#while true; do sleep 3000; done
+tail -f $SYBASE/$SYBASE_ASE/install/DB_TEST.log
