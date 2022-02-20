@@ -1,4 +1,0 @@
-DB_TEST
-	master tcp ether 0.0.0.0 5000
-	query tcp ether 0.0.0.0 5000
-

@@ -8,7 +8,7 @@ sqlsrv.network_protocol_list: tcp
 sqlsrv.network_hostname_list: 0.0.0.0
 sqlsrv.network_port_list: 5000
 sqlsrv.application_type: USE_DEFAULT
-sqlsrv.server_page_size: 4096
+sqlsrv.server_page_size: 2048
 sqlsrv.force_buildmaster: no
 sqlsrv.master_device_physical_name: /data/master.dat
 sqlsrv.master_device_size: 78
@@ -25,7 +25,9 @@ sqlsrv.tempdb_device_physical_name: /data/tempdb.dat
 sqlsrv.tempdb_device_size: USE_DEFAULT
 sqlsrv.tempdb_database_size: USE_DEFAULT
 sqlsrv.default_backup_server: ASE_BACKUP
-#sqlsrv.addl_cmdline_parameters: PUT_ANY_ADDITIONAL_COMMAND_LINE_PARAMETERS_HERE
+# Additional param to dataserver cmd to skip some check that make server crash
+# https://answers.sap.com/questions/13386863/i-updated-my-system-and-now-server-is-crahing.html 
+sqlsrv.addl_cmdline_parameters: -T11889
 sqlsrv.do_configure_pci: no
 sqlsrv.sybpcidb_device_physical_name: PUT_THE_PATH_OF_YOUR_SYBPCIDB_DATA_DEVICE_HERE
 sqlsrv.sybpcidb_device_size: USE_DEFAULT
